@@ -1,14 +1,12 @@
 from rest_framework import status
-from rest_framework.permissions import BasePermission
+from rest_framework.permissions import BasePermission,SAFE_METHODS
 from rest_framework.response import Response
 
 
 class IsOwnerOrReadOnly(BasePermission):
 
     def has_object_permission(self, request, view, obj):
-        if request.method in ['GET', 'HEAD', 'OPTIONS']:
-            return True
-        return obj.author == request.user
+        return request.method == SAFE_METHODS or obj.author == request.user
 
 
 class IsComment(BasePermission):
@@ -21,5 +19,5 @@ class IsComment(BasePermission):
 
 class IsCreateGroup(BasePermission):
     def has_object_permission(self, request, view, obj):
-        if request.method in ['POST']:
+        if request.method == ['POST']:
             return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
